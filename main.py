@@ -123,6 +123,12 @@ MY_SKILLS = {
         "configuration", "environment setup",
         "refactoring", "code cleanup"
     ],
+    "avoid": [
+    "complex compiler internals",
+    "GPU/CUDA optimization",
+    "UI/frontend design",
+    "platform-specific mobile bugs"
+    ]
 }
 
 def fetch_issues(repo):
