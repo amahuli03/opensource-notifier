@@ -150,7 +150,8 @@ def check_issues():
 
             score = score_issue(issue, MY_SKILLS)
 
-            issue_text = f"{repo}\n{issue['title']}\n{issue['html_url']}\nCreated: {issue['created_at']}\nSummary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\n"
+            created_str = created_at.astimezone().strftime("%b %d, %Y %I:%M %p %Z")
+            issue_text = f"{repo}\n{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\nSummary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\n"
 
             if score["notify_immediately"]:
                 send_email(
