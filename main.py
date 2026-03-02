@@ -113,7 +113,16 @@ REPOS = [
 MY_SKILLS = {
     "languages": ["Go", "Python", "SQL"],
     "domains": ["backend", "APIs", "infrastructure", "LLMs", "data pipelines"],
-    "tools": ["Docker", "Redis", "Postgres"]
+    "comfortable_areas": [
+        "API development", "REST endpoints", "backend services",
+        "data pipelines", "ETL", "data processing",
+        "documentation improvements", "typo fixes",
+        "bug fixes", "error handling",
+        "simple feature requests", "small enhancements",
+        "testing", "unit tests", "test coverage",
+        "configuration", "environment setup",
+        "refactoring", "code cleanup"
+    ],
 }
 
 def fetch_issues(repo):
@@ -150,10 +159,19 @@ def check_issues():
 
             score = score_issue(issue, MY_SKILLS)
 
-            created_str = created_at.astimezone().strftime("%b %d, %Y %I:%M %p %Z")
-            issue_text = f"{repo}\n{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\nSummary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\n"
+            labels = [label["name"].lower() for label in issue.get("labels", [])]
+            easy_tags = [l for l in labels if l in ("good first issue", "easy")]
 
-            if score["notify_immediately"]:
+            created_str = created_at.astimezone().strftime("%b %d, %Y %I:%M %p %Z")
+            tag_line = f"Tags: {', '.join(easy_tags)}\n" if easy_tags else ""
+            issue_text = f"{repo}\n{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\n{tag_line}Summary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\n"
+
+            if easy_tags:
+                send_email(
+                    subject=f"🏷️ Easy Issue: {issue['title']}",
+                    body=issue_text
+                )
+            elif score["notify_immediately"]:
                 send_email(
                     subject=f"🚨 Urgent GitHub Issue: {issue['title']}",
                     body=issue_text
