@@ -72,7 +72,7 @@ Score the issue:
 - urgency_score: 0-10
 - relevance_score: 0-10
 - summary: 1-2 sentence summary
-- notify_immediately: true if urgency >=7 or relevance >=8, else false
+- notify_immediately: true if relevance >=8, else false
 
 Return ONLY JSON with keys: urgency_score, relevance_score, summary, notify_immediately
 """
@@ -107,7 +107,43 @@ REPOS = [
     "tensorflow/tensorflow",
     "pytorch/pytorch",
     "commons-app/apps-android-commons",
-    "flutter/flutter"
+    "flutter/flutter",
+    "agno-agi/agno",
+    "Arize-ai/phoenix",
+    "SciPhi-AI/R2R",
+    "promptfoo/promptfoo",
+    "uptrain-ai/uptrain",
+    "vibrantlabsai/ragas",
+    "run-llama/llama_deploy",
+    "truefoundry/cognita",
+    "pydantic/logfire",
+    "fetchai/uAgents",
+    "alibaba/OpenSandbox",
+    "EvoAgentX/EvoAgentX",
+    "giselles-ai/giselle",
+    "openclaw/openclaw",
+    "awslabs/agent-squad",
+    "openai/swarm",
+    "agi-inc/agent-protocol",
+    "Significant-Gravitas/AutoGPT",
+    "comet-ml/opik",
+    "deepchecks/deepchecks",
+    "uptrain-ai/uptrain",
+    "trufflesecurity/trufflehog",
+    "evidentlyai/evidently",
+    "mosecorg/mosec",
+    "lutzroeder/netron",
+    "AnswerDotAI/RAGatouille",
+    "weaviate/Verba",
+    "Future-House/paper-qa",
+    "HKUDS/LightRAG",
+    "Cinnamon/kotaemon",
+    "HKUDS/RAG-Anything",
+    "vitali87/code-graph-rag",
+    "onyx-dot-app/onyx",
+
+
+
 ]
 # TODO: Add more skills and tools
 MY_SKILLS = {
