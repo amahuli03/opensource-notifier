@@ -128,7 +128,6 @@ REPOS = [
     "alibaba/OpenSandbox",
     "EvoAgentX/EvoAgentX",
     "giselles-ai/giselle",
-    "openclaw/openclaw",
     "awslabs/agent-squad",
     "openai/swarm",
     "agi-inc/agent-protocol",
