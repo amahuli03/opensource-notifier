@@ -106,7 +106,6 @@ def send_email(subject, body, to=EMAIL_ADDRESS):
 
 
 REPOS = [
-    "agi-inc/agent-protocol",
     "agno-agi/agno",
     "commons-app/apps-android-commons",
     "Significant-Gravitas/AutoGPT",
