@@ -77,10 +77,11 @@ Developer profile:
 Score the issue based on how well it matches this developer:
 - relevance_score: 0-10. High (8-10) if the issue matches the developer's comfortable areas, languages, or domains. Low (0-3) if it falls under their avoid list. Consider whether the issue is a feature request, bug fix, docs improvement, or enhancement — these are preferred.
 - urgency_score: 0-10. High if the issue is time-sensitive, has few comments (less competition), or is explicitly beginner/contributor-friendly.
+- difficulty_score: 0-10. Low (1-3) for docs fixes, typos, simple config changes. Medium (4-6) for straightforward bug fixes, small features, adding tests. High (7-10) for complex architecture changes, deep domain expertise required, or large scope.
 - summary: 1-2 sentence summary of what the issue is asking for and what a contributor would need to do.
 - notify_immediately: true if relevance_score >= 8, else false.
 
-Return ONLY JSON with keys: relevance_score, urgency_score, summary, notify_immediately
+Return ONLY JSON with keys: relevance_score, urgency_score, difficulty_score, summary, notify_immediately
 """
 
     response = client.chat.completions.create(
@@ -216,7 +217,7 @@ def check_issues():
 
             created_str = created_at.astimezone().strftime("%b %d, %Y %I:%M %p %Z")
             tag_line = f"Tags: {', '.join(easy_tags)}\n" if easy_tags else ""
-            issue_text = f"{repo}\n{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\n{tag_line}Summary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\n"
+            issue_text = f"{repo}\n{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\n{tag_line}Summary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\nDifficulty: {score['difficulty_score']}\n"
 
             if easy_tags:
                 send_email(
