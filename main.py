@@ -62,19 +62,25 @@ def score_issue(issue, developer_profile):
         body = body[:MAX_BODY_LENGTH] + "\n\n[Truncated]"
 
     prompt = f"""
-You are a GitHub issue triage assistant.
+You are a GitHub issue triage assistant helping an {developer_profile['experience_level']} open source contributor find issues to work on.
 
 Issue title: {issue['title']}
 Issue body: {body}
-Developer profile: {developer_profile}
+Issue labels: {[label['name'] for label in issue.get('labels', [])]}
 
-Score the issue:
-- urgency_score: 0-10
-- relevance_score: 0-10
-- summary: 1-2 sentence summary
-- notify_immediately: true if relevance >=8, else false
+Developer profile:
+- Languages: {developer_profile['languages']}
+- Domains: {developer_profile['domains']}
+- Comfortable areas: {developer_profile['comfortable_areas']}
+- Areas to avoid: {developer_profile['avoid']}
 
-Return ONLY JSON with keys: urgency_score, relevance_score, summary, notify_immediately
+Score the issue based on how well it matches this developer:
+- relevance_score: 0-10. High (8-10) if the issue matches the developer's comfortable areas, languages, or domains. Low (0-3) if it falls under their avoid list. Consider whether the issue is a feature request, bug fix, docs improvement, or enhancement — these are preferred.
+- urgency_score: 0-10. High if the issue is time-sensitive, has few comments (less competition), or is explicitly beginner/contributor-friendly.
+- summary: 1-2 sentence summary of what the issue is asking for and what a contributor would need to do.
+- notify_immediately: true if relevance_score >= 8, else false.
+
+Return ONLY JSON with keys: relevance_score, urgency_score, summary, notify_immediately
 """
 
     response = client.chat.completions.create(
@@ -145,25 +151,29 @@ REPOS = [
 
 
 ]
-# TODO: Add more skills and tools
 MY_SKILLS = {
     "languages": ["Go", "Python", "SQL"],
+    "experience_level": "intermediate",
     "domains": ["backend", "APIs", "infrastructure", "LLMs", "data pipelines"],
     "comfortable_areas": [
         "API development", "REST endpoints", "backend services",
         "data pipelines", "ETL", "data processing",
         "documentation improvements", "typo fixes",
         "bug fixes", "error handling",
-        "simple feature requests", "small enhancements",
+        "feature requests", "small enhancements", "new endpoints",
         "testing", "unit tests", "test coverage",
         "configuration", "environment setup",
-        "refactoring", "code cleanup"
+        "refactoring", "code cleanup",
+        "CLI tools", "scripting", "automation"
     ],
     "avoid": [
-    "complex compiler internals",
-    "GPU/CUDA optimization",
-    "UI/frontend design",
-    "platform-specific mobile bugs"
+        "complex compiler internals",
+        "GPU/CUDA optimization",
+        "UI/frontend design",
+        "platform-specific mobile bugs",
+        "build systems", "packaging", "CMake", "Bazel", "setuptools",
+        "security", "cryptography", "auth protocols",
+        "performance profiling", "benchmarking", "micro-optimizations"
     ]
 }
 
