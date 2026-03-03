@@ -132,6 +132,7 @@ REPOS = [
     "Future-House/paper-qa",
     "Arize-ai/phoenix",
     "promptfoo/promptfoo",
+    "pydantic/pydantic",
     "pytorch/pytorch",
     "SciPhi-AI/R2R",
     "HKUDS/RAG-Anything",
