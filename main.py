@@ -211,20 +211,20 @@ def check_issues():
 
             created_str = created_at.astimezone().strftime("%b %d, %Y %I:%M %p %Z")
             tag_line = f"Tags: {', '.join(easy_tags)}\n" if easy_tags else ""
-            issue_text = f"{repo}\n{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\n{tag_line}Summary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\nDifficulty: {score['difficulty_score']}\n"
+            issue_text = f"{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\n{tag_line}Summary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\nDifficulty: {score['difficulty_score']}\n"
 
             if easy_tags:
                 send_email(
                     subject=f"🏷️ Easy Issue: {issue['title']}",
-                    body=issue_text
+                    body=f"{repo}\n{issue_text}"
                 )
             elif score["notify_immediately"]:
                 send_email(
                     subject=f"🚨 Urgent GitHub Issue: {issue['title']}",
-                    body=issue_text
+                    body=f"{repo}\n{issue_text}"
                 )
             else:
-                pending.append(issue_text)
+                pending.append({"repo": repo, "text": issue_text})
 
             print("-----")
             print("Title:", issue["title"])
@@ -243,7 +243,17 @@ def send_daily_digest():
         print("No pending issues for digest.")
         return
 
-    body = "\n\n".join(pending)
+    grouped = {}
+    for item in pending:
+        repo = item["repo"]
+        grouped.setdefault(repo, []).append(item["text"])
+
+    sections = []
+    for repo, issues in grouped.items():
+        section = f"=== {repo} ===\n\n" + "\n\n".join(issues)
+        sections.append(section)
+
+    body = "\n\n\n".join(sections)
     send_email(
         subject=f"GitHub Issue Digest ({len(pending)} new issues)",
         body=body
