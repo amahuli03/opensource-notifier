@@ -7,6 +7,14 @@ import smtplib
 from email.message import EmailMessage
 from openai import OpenAI
 import json
+import logging
+
+logging.basicConfig(
+    filename="notifier.log",
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%b %d, %Y %I:%M:%S %p",
+)
 
 
 load_dotenv()
@@ -191,6 +199,8 @@ def check_issues():
     last_check = get_last_check()
     now = datetime.now(timezone.utc)
     pending = load_pending_digest()
+    fmt = "%b %d, %Y %I:%M:%S %p %Z"
+    logging.info(f"=== check_issues START | last_check={last_check.astimezone().strftime(fmt)} now={now.astimezone().strftime(fmt)} ===")
 
     for repo in REPOS:
         print(f"\nFetching issues for {repo}...")
@@ -214,11 +224,13 @@ def check_issues():
             issue_text = f"{issue['title']}\n{issue['html_url']}\nCreated: {created_str}\n{tag_line}Summary: {score['summary']}\nUrgency: {score['urgency_score']}\nRelevance: {score['relevance_score']}\nDifficulty: {score['difficulty_score']}\n"
 
             if easy_tags:
+                logging.info(f"EMAILING easy issue #{issue['number']} '{issue['title']}' from {repo} (created={created_str})")
                 send_email(
                     subject=f"🏷️ Easy Issue: {issue['title']}",
                     body=f"{repo}\n{issue_text}"
                 )
             elif score["notify_immediately"]:
+                logging.info(f"EMAILING urgent issue #{issue['number']} '{issue['title']}' from {repo} (created={created_str})")
                 send_email(
                     subject=f"🚨 Urgent GitHub Issue: {issue['title']}",
                     body=f"{repo}\n{issue_text}"
@@ -233,6 +245,7 @@ def check_issues():
 
     update_last_check(now)
     save_pending_digest(pending)
+    logging.info(f"=== check_issues END | updated last_check to {now.astimezone().strftime(fmt)} | {len(pending)} pending ===")
     print(f"\n[{now.isoformat()}] Check complete. {len(pending)} issues pending for digest.")
 
 
