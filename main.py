@@ -180,14 +180,16 @@ MY_SKILLS = {
     ]
 }
 
-def fetch_issues(repo):
+def fetch_issues(repo, since):
     url = f"https://api.github.com/repos/{repo}/issues"
     headers = {
         "Authorization": f"Bearer {GITHUB_TOKEN}",
         "Accept": "application/vnd.github+json"
     }
     params = {
-        "state": "open"
+        "state": "open",
+        "since": since.isoformat(),
+        "per_page": 100,
     }
 
     response = requests.get(url, headers=headers, params=params)
@@ -204,7 +206,7 @@ def check_issues():
 
     for repo in REPOS:
         print(f"\nFetching issues for {repo}...")
-        issues = fetch_issues(repo)
+        issues = fetch_issues(repo, last_check)
 
         for issue in issues:
             if "pull_request" in issue:
@@ -214,9 +216,19 @@ def check_issues():
             if created_at <= last_check:
                 continue
 
+            labels = [label["name"].lower() for label in issue.get("labels", [])]
+            skip_labels = {
+                "frontend", "ui", "ux", "css", "design",
+                "cuda", "gpu",
+                "security", "cve", "vulnerability",
+                "build", "cmake", "bazel", "packaging", "setuptools",
+            }
+            if skip_labels & set(labels):
+                logging.info(f"SKIPPING issue #{issue['number']} '{issue['title']}' from {repo} (labels: {labels})")
+                continue
+
             score = score_issue(issue, MY_SKILLS)
 
-            labels = [label["name"].lower() for label in issue.get("labels", [])]
             easy_tags = [l for l in labels if l in ("good first issue", "easy")]
 
             created_str = created_at.astimezone().strftime("%b %d, %Y %I:%M %p %Z")
