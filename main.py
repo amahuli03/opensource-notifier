@@ -246,13 +246,13 @@ def check_issues():
             if easy_tags:
                 logging.info(f"EMAILING easy issue #{issue['number']} '{issue['title']}' from {repo} (created={created_str})")
                 send_email(
-                    subject=f"🏷️ Easy Issue: {issue['title']}",
+                    subject=f"🏷️ [{repo.split('/')[-1]}] Easy Issue: {issue['title']}",
                     body=f"{repo}\n{issue_text}"
                 )
             elif score["notify_immediately"]:
                 logging.info(f"EMAILING urgent issue #{issue['number']} '{issue['title']}' from {repo} (created={created_str})")
                 send_email(
-                    subject=f"🚨 Urgent GitHub Issue: {issue['title']}",
+                    subject=f"🚨 [{repo.split('/')[-1]}] Urgent: {issue['title']}",
                     body=f"{repo}\n{issue_text}"
                 )
             else:
