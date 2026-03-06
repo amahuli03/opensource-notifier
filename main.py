@@ -65,7 +65,7 @@ def update_last_check(time):
 def score_issue(issue, developer_profile):
     import json
 
-    body = issue.get("body", "")
+    body = issue.get("body") or ""
     if len(body) > MAX_BODY_LENGTH:
         body = body[:MAX_BODY_LENGTH] + "\n\n[Truncated]"
 
@@ -95,10 +95,16 @@ Return ONLY JSON with keys: relevance_score, urgency_score, difficulty_score, su
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
-        temperature=0
+        temperature=0,
+        response_format={"type": "json_object"},
     )
 
-    return json.loads(response.choices[0].message.content.strip())
+    content = response.choices[0].message.content
+    if not content or not content.strip():
+        logging.warning(f"Empty LLM response for issue #{issue.get('number')} '{issue.get('title')}'")
+        return None
+
+    return json.loads(content.strip())
 
 def send_email(subject, body, to=EMAIL_ADDRESS):
     msg = EmailMessage()
@@ -228,6 +234,8 @@ def check_issues():
                 continue
 
             score = score_issue(issue, MY_SKILLS)
+            if score is None:
+                continue
 
             easy_tags = [l for l in labels if l in ("good first issue", "easy")]
 
