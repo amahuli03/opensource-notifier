@@ -123,7 +123,6 @@ REPOS = [
     "agno-agi/agno",
     "commons-app/apps-android-commons",
     "Significant-Gravitas/AutoGPT",
-    "vitali87/code-graph-rag",
     "truefoundry/cognita",
     "deepchecks/deepchecks",
     "evidentlyai/evidently",
@@ -212,7 +211,11 @@ def check_issues():
 
     for repo in REPOS:
         print(f"\nFetching issues for {repo}...")
-        issues = fetch_issues(repo, last_check)
+        try:
+            issues = fetch_issues(repo, last_check)
+        except Exception as e:
+            logging.warning(f"SKIPPING {repo}: {e}")
+            continue
 
         for issue in issues:
             if "pull_request" in issue:
